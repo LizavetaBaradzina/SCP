@@ -1,0 +1,47 @@
+﻿ID: bar_backend
+_schema-version: 3.1.0
+version: 1.0.0
+
+modules:
+    -
+        name: bar_db
+        type: hdb
+        path: db
+        provides:
+            - {name: bar_db, public: true}
+        parameters:
+            memory: 256M
+            disk-quota: 256M
+        requires:
+            - {name: bar_hdi}
+    -
+        name: bar_srv
+        type: nodejs
+        path: srv
+        properties:
+            XS_APP_LOG_LEVEL: debug
+        parameters:
+            memory: 256M
+            disk-quota: 1024M
+        provides:
+            - {name: bar_srv, public: true, properties: {url: '${default-url}'}}
+        requires:
+            - {name: bar_db}
+            - {name: bar_hdi}
+            - {name: bar_uaa}
+            - {name: bar_dest}
+            - {name: bar_conn}
+
+resources:
+    -
+        name: bar_hdi
+        type: org.cloudfoundry.existing-service
+    -
+        name: bar_uaa
+        type: org.cloudfoundry.existing-service
+    -
+        name: bar_dest
+        type: org.cloudfoundry.existing-service
+    -
+        name: bar_conn
+        type: org.cloudfoundry.existing-service
